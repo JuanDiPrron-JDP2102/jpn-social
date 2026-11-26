@@ -132,7 +132,8 @@ h4{margin:22px 0 0;font-size:.95rem;color:var(--mute);font-weight:500;padding-bo
 <script>
 /* ================= CONFIGURACIÓN =================
    Cambia TU_USUARIO por tu usuario de GitHub y crea el repo público con ese nombre.
-   Luego entra como JuanDiPrron y pulsa "Conectar GitHub" una sola vez. */
+   Luego entra como JuanDiPrron y pulsa "Conectar GitHub" una sola vez.
+   Para cambiar el token más adelante, entra como JuanDiPrron y pulsa "Cambiar token". */
 const CFG={owner:"JuanDiPrron-JDP2102",repo:"jpn-social",branch:"main"};
 const OWNER_USER="juandiprron";
 const SEED={"badfeisss":["badfeisss","4b07adb21ba44b3886e86f302aab8236b0112b1c559e0c9b3c5296f0d0265442"],"juandiprron":["JuanDiPrron","d74ce2e186ea36e73a47e78181039b35f1b53f6812289307896b0fc2044c1175"],"pandiisito":["Pandiisito","9c01660d644fbe6450593050c9fca90d5c0b0fc9ed27b13fe43f2c2d1ed2badf"],"sun":["Sun","983f195f1a88161ed2149e6ad5b1562b44cfd3f33d13d57607e79591996ae3ca"],"deivid":["deivid","597d3004cd6fb372dffe9e28ec3ec5f40969744d68e274095399805ffe692029"],"r3aljos1_":["R3alJos1_","73053599ec1366cdf1568701d448400c0ce3890b1f5fb1e32130a4e2c9801397"],"thekend":["Thekend","2a3ec90298029df3b3ab718b55c1bd1cbb8d69e1aa06971a62bdd305a8432763"],"angelcasual":["Angelcasual","c8f76622c634fd0b64d8a6d0c4362227be4375455dca29f36d6331967047070e"],"anithaabi":["anithaabi","3a360e583c988115fdaf1cf0f09f84f222cd1d25906408537c3844ea5d473d37"],"coldito":["Coldito","50536256cfcdc8a3aaa208f572653ef40867fd031d86defd5a18a7c15354e26d"],"darks2x":["DARKS2X","3d21270dfa02e5ed96004ac0d7dbabcbc2a1f05543a7446be440d82b13d4ad82"],"dereckbtw":["dereckbtw","ed5908a51e14077202328c53237805c8bc5bc6e267e9f9ecdb3387275bcbf28b"],"emx_mc":["Emx_mc","4a2430eec67678a0efc7e0789ba978196878367c7e33d24d195e8e14edab34da"],"fabsito":["Fabsito","7fe2e6bfcfc031cb316a54111c81c69082666489ceb4028c2026079ab00e85fc"],"faroc":["FAROC","1a09f2cc09f2ced28fbdaee518816f8736fcd1d269b13c0ba15b399cc35d3c9e"],"hamsd77":["HamsD77","ca7a3de2e0608b3659e143e90099fb39b97c3ccf1383e7d0c4e1c1d27284dbc9"],"httpsjester1":["httpsjester1","e5ecababc5adaacc93264a2ca36ccfffa6f92d812332cbe7e2f5c89c38131954"],"joshua_fvl":["joshua_fvl","57b22fee27817f9bf72eb89d984ead3166720d3640d5aec5756141d7f613789a"],"juda":["Juda","8269f63f9bbee0e3adcca158701f4d9e8c8ea435e7db59aa7dcde139eac4a9f0"],"lonard":["Lonard","0a33099bdfca1ab8b6207e2c5cfd7ee3474440324c7f6acf9d8667b5c5d07d45"],"luklills":["Luklills","ee6af026d7fbc60459c84315e5529e4d0006d57610e05a5df64196701858eab2"],"shoani":["Shoani","59defdc2e0d22ccaa54745558f3580d765ca977962067a88b202ebffca7f4e0d"],"xvillix14":["Xvillix14","f7981d11cdd69903f2ae9f9eeb55f8fc33c2c466b4282773bfaa81b350303f51"],"zalirayy":["zalirayy","0d6ec5e2864d6c7d183946e235946020981f70c1c8c8b7524cb9536bb38333dc"],"ferxs":["FERXS","c48cddbaa462a0666c045c9cc9920ce3b4514f911bf9ecc02d5a751dda4e78cc"],"gotty":["Gotty","1cab46704e41ae98983ba2c5be0ae5b892dcf835bc78a2f44ebf203cb806bfe2"],"vnxsitoow":["Vnxsitoow","61370dd14dbdd6b1bef61f23c642973e9ace0079148570c4b74f50167c4ee91b"],"juancausalito":["Juancausalito","9ea1d429f99802fbe7b8e2b55bd67fa802d0a8b849ffbe8e5374cedec1b21a20"]};
@@ -205,26 +206,45 @@ async function editJ(path,def,fn){
       const f=await getFile(path);const d=f.text?JSON.parse(f.text):def;fn(d);
       await putFile(path,enc(JSON.stringify(d,null,1)),f.sha,"Japón Social: "+me);
       LS.set("f_"+path,d);setStatus();return d;
-    }catch(e){if(i===2)setStatus("No se pudo guardar en GitHub ("+e.message+").")}
+    }catch(e){
+      /* Token inválido (401): leer el token actual del vault y reintentar */
+      if(/401/.test(e.message)){const t=await openToken();if(t&&t!==token())LS.set("jp_tok",t)}
+      if(i===2)setStatus("No se pudo guardar en GitHub ("+e.message+").");
+    }
   }
   return null;
 }
 async function refresh(){posts=await readJ("data/posts.json",[]);profiles=await readJ("data/profiles.json",{});render()}
 const act=fn=>editJ("data/posts.json",[],fn).then(d=>{if(d){posts=d;render()}});
 
+/* ---- estado y token ---- */
 function setStatus(m){
   const el=$("status");
   if(!GH){el.innerHTML="Modo local: cambia <b>CFG</b> en el archivo para guardar en GitHub.";return}
-  if(m){el.textContent=m;return}
-  if(token()){el.textContent="Conectado a GitHub · "+CFG.owner+"/"+CFG.repo;return}
-  if(me===OWNER_USER){el.innerHTML='<button id="tk">Conectar GitHub</button> (solo tú ves este botón; se hace una vez)';
-    $("tk").onclick=async()=>{
-      const t=prompt("Pega tu token de GitHub (Contents: lectura y escritura):");if(!t)return;
-      LS.set("jp_tok",t.trim());
-      try{const f=await getFile("data/vault.json");await putFile("data/vault.json",enc(await sealToken(t.trim())),f.sha,"vault");setStatus()}
-      catch(e){LS.set("jp_tok","");setStatus("El token no funciona o no tiene permisos ("+e.message+").")}
-    };
-  }else el.textContent="Solo lectura por ahora: esperando que JuanDiPrron conecte GitHub.";
+  el.textContent=m?m:token()?"Conectado a GitHub · "+CFG.owner+"/"+CFG.repo
+    :me===OWNER_USER?"":"Solo lectura por ahora: esperando que JuanDiPrron conecte GitHub.";
+  if(me===OWNER_USER){
+    const b=document.createElement("button");
+    b.type="button";
+    b.style.marginLeft="10px";
+    b.textContent=token()?"Cambiar token":"Conectar GitHub";
+    b.onclick=changeToken;
+    el.appendChild(b);
+  }
+}
+async function changeToken(){
+  const t=prompt("Pega el token NUEVO de GitHub (Contents: lectura y escritura):");
+  if(!t||!t.trim())return;
+  const nuevo=t.trim(), viejo=token();
+  LS.set("jp_tok",nuevo);
+  try{
+    const f=await getFile("data/vault.json");
+    await putFile("data/vault.json",enc(await sealToken(nuevo)),f.sha,"vault");
+    setStatus("Token cambiado correctamente.");
+  }catch(e){
+    LS.set("jp_tok",viejo);
+    setStatus("El token nuevo no funciona o no tiene permisos ("+e.message+"). Se mantiene el anterior.");
+  }
 }
 
 /* ---- piezas ---- */
