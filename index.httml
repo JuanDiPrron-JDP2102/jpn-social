@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Japón Social</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090a;--line:#26262a;--ink:#ece6df;--mute:#8b857e;--red:#d7263d}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hiragino Sans",system-ui,sans-serif;line-height:1.55}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.hidden{display:none!important}
+.mincho{font-family:"Shippori Mincho","Hiragino Mincho ProN",serif}
+#auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
+.login{width:100%;max-width:340px;position:relative}
+.hanko{width:54px;height:54px;border-radius:50%;background:var(--red);display:grid;place-items:center;color:#fff;font:800 1.5rem "Shippori Mincho",serif;transform:rotate(-8deg);box-shadow:inset 0 0 0 3px rgba(0,0,0,.18)}
+.login h1{font-size:2.5rem;margin:18px 0 2px;line-height:1.05}
+.login p.sub{margin:0 0 30px;color:var(--mute)}
+label{display:block;font-size:.85rem;color:var(--mute);margin:18px 0 4px}
+input[type=text],input[type=password],textarea{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:8px 2px;border-radius:0}
+input:focus,textarea:focus{outline:0;border-color:var(--red)}
+.btn{background:var(--red);border:0;color:#fff;padding:9px 18px;font-weight:700;border-radius:3px}
+.btn.line{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.sm{padding:5px 12px;font-size:.85rem}
+.btn:hover{filter:brightness(1.12)}
+.msg{color:#ff6b7d;font-size:.88rem;min-height:1.3em;margin:10px 0 0}
+.msg.ok{color:var(--mute)}
+header.top{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(9,9,10,.94);backdrop-filter:blur(6px);z-index:5;flex-wrap:wrap}
+header.top .hanko{width:34px;height:34px;font-size:1rem}
+header.top h2{margin:0;font-size:1.2rem;flex:1;min-width:130px}
+nav{display:flex;gap:2px}
+nav button{background:none;border:0;padding:6px 12px;color:var(--mute);font-weight:500}
+nav button.on{color:var(--ink);box-shadow:inset 0 -2px var(--red)}
+.status{font-size:.78rem;color:var(--mute);padding:6px 20px;border-bottom:1px solid var(--line)}
+.status button{background:none;border:0;color:var(--red);text-decoration:underline;padding:0}
+main{max-width:720px;margin:0 auto;padding:22px 18px}
+.av{position:relative;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#1d1d21;color:var(--red);font-weight:700;overflow:hidden;flex:none}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.av.s{width:28px;height:28px;font-size:.8rem}
+.av.xl{width:112px;height:112px;font-size:2.6rem;box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--red)}
+.compose{display:flex;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.compose textarea{resize:vertical;min-height:54px}
+.post{display:flex;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.post .body{flex:1;min-width:0}
+.who{font-weight:700}
+.who span{color:var(--mute);font-weight:400;font-size:.8rem;margin-left:6px}
+.who a{cursor:pointer}.who a:hover{color:var(--red)}
+.post p{margin:4px 0 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.acts button{background:none;border:0;color:var(--mute);padding:0 14px 0 0;font-size:.85rem}
+.acts button.on{color:var(--red)}
+.replies{margin-top:8px;border-left:2px solid var(--line);padding-left:12px}
+.rep{display:flex;gap:8px;padding:6px 0;font-size:.92rem}
+.rep p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.rep button{background:none;border:0;color:var(--mute);font-size:.78rem;padding:0 0 0 8px}
+.rform{display:flex;gap:8px;align-items:flex-end;margin-top:6px}
+.empty{color:var(--mute);padding:26px 0}
+.urow{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.urow:hover b{color:var(--red)}
+.urow div{min-width:0;flex:1}
+.urow small{display:block;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prof{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;padding-bottom:20px}
+.prof .info{flex:1;min-width:220px}
+.prof h3{margin:0;font-size:1.7rem}
+.bio{color:var(--mute);margin:4px 0 10px;white-space:pre-wrap}
+h4{margin:22px 0 0;font-size:.95rem;color:var(--mute);font-weight:500;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.ctx{color:var(--mute);font-size:.82rem}
+</style>
+</head>
+<body>
+
+<section id="auth">
+  <div class="login">
+    <div class="hanko" aria-hidden="true">日</div>
+    <h1 class="mincho">Japón<br>Social</h1>
+    <p class="sub">Entra con tu usuario.</p>
+    <label for="user">Usuario</label>
+    <input id="user" type="text" autocomplete="username">
+    <label for="pass">Contraseña</label>
+    <input id="pass" type="password" autocomplete="current-password">
+    <p id="authMsg" class="msg" role="alert"></p>
+    <button id="go" class="btn" type="button" style="margin-top:8px">Entrar</button>
+  </div>
+</section>
+
+<section id="app" class="hidden">
+  <header class="top">
+    <div class="hanko" aria-hidden="true">日</div>
+    <h2 class="mincho">Japón Social</h2>
+    <nav><button id="nP" type="button">Posts</button><button id="nU" type="button">Usuarios</button><button id="nM" type="button">Mi perfil</button></nav>
+    <button id="logout" class="btn line sm" type="button">Salir</button>
+  </header>
+  <div class="status" id="status"></div>
+  <main>
+    <div id="vP">
+      <div class="compose">
+        <span id="cAv"></span>
+        <div style="flex:1">
+          <textarea id="txt" maxlength="500" rows="2" placeholder="Cuenta algo..."></textarea>
+          <div style="text-align:right;margin-top:8px"><button id="send" class="btn" type="button">Publicar</button></div>
+        </div>
+      </div>
+      <div id="feed"></div>
+    </div>
+    <div id="vU" class="hidden"><div id="ulist"></div></div>
+    <div id="vM" class="hidden">
+      <div class="prof">
+        <span id="bigAv"></span>
+        <div class="info">
+          <h3 id="pName" class="mincho"></h3>
+          <div id="bioView" class="bio"></div>
+          <div id="editBox" class="hidden">
+            <textarea id="bioIn" maxlength="200" rows="2" placeholder="Escribe tu descripción..."></textarea>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <button id="saveBio" class="btn sm" type="button">Guardar descripción</button>
+              <button id="chg" class="btn line sm" type="button">Cambiar foto</button>
+              <input id="file" type="file" accept="image/*" class="hidden">
+            </div>
+          </div>
+          <p id="pMsg" class="msg ok" role="status"></p>
+        </div>
+      </div>
+      <h4>Publicaciones</h4><div id="myPosts"></div>
+      <h4>Respuestas</h4><div id="myReps"></div>
+    </div>
+  </main>
+</section>
+
+<script>
+/* ================= CONFIGURACIÓN =================
+   Cambia TU_USUARIO por tu usuario de GitHub y crea el repo público con ese nombre.
+   Luego entra como JuanDiPrron y pulsa "Conectar GitHub" una sola vez. */
+const CFG={owner:"JuanDiPrron-JDP2102",repo:"jpn-social",branch:"main"};
+const OWNER_USER="juandiprron";
+const SEED={"badfeisss":["badfeisss","4b07adb21ba44b3886e86f302aab8236b0112b1c559e0c9b3c5296f0d0265442"],"juandiprron":["JuanDiPrron","d74ce2e186ea36e73a47e78181039b35f1b53f6812289307896b0fc2044c1175"],"pandiisito":["Pandiisito","9c01660d644fbe6450593050c9fca90d5c0b0fc9ed27b13fe43f2c2d1ed2badf"],"sun":["Sun","983f195f1a88161ed2149e6ad5b1562b44cfd3f33d13d57607e79591996ae3ca"],"deivid":["deivid","597d3004cd6fb372dffe9e28ec3ec5f40969744d68e274095399805ffe692029"],"r3aljos1_":["R3alJos1_","73053599ec1366cdf1568701d448400c0ce3890b1f5fb1e32130a4e2c9801397"],"thekend":["Thekend","2a3ec90298029df3b3ab718b55c1bd1cbb8d69e1aa06971a62bdd305a8432763"],"angelcasual":["Angelcasual","c8f76622c634fd0b64d8a6d0c4362227be4375455dca29f36d6331967047070e"],"anithaabi":["anithaabi","3a360e583c988115fdaf1cf0f09f84f222cd1d25906408537c3844ea5d473d37"],"coldito":["Coldito","50536256cfcdc8a3aaa208f572653ef40867fd031d86defd5a18a7c15354e26d"],"darks2x":["DARKS2X","3d21270dfa02e5ed96004ac0d7dbabcbc2a1f05543a7446be440d82b13d4ad82"],"dereckbtw":["dereckbtw","ed5908a51e14077202328c53237805c8bc5bc6e267e9f9ecdb3387275bcbf28b"],"emx_mc":["Emx_mc","4a2430eec67678a0efc7e0789ba978196878367c7e33d24d195e8e14edab34da"],"fabsito":["Fabsito","7fe2e6bfcfc031cb316a54111c81c69082666489ceb4028c2026079ab00e85fc"],"faroc":["FAROC","1a09f2cc09f2ced28fbdaee518816f8736fcd1d269b13c0ba15b399cc35d3c9e"],"hamsd77":["HamsD77","ca7a3de2e0608b3659e143e90099fb39b97c3ccf1383e7d0c4e1c1d27284dbc9"],"httpsjester1":["httpsjester1","e5ecababc5adaacc93264a2ca36ccfffa6f92d812332cbe7e2f5c89c38131954"],"joshua_fvl":["joshua_fvl","57b22fee27817f9bf72eb89d984ead3166720d3640d5aec5756141d7f613789a"],"juda":["Juda","8269f63f9bbee0e3adcca158701f4d9e8c8ea435e7db59aa7dcde139eac4a9f0"],"lonard":["Lonard","0a33099bdfca1ab8b6207e2c5cfd7ee3474440324c7f6acf9d8667b5c5d07d45"],"luklills":["Luklills","ee6af026d7fbc60459c84315e5529e4d0006d57610e05a5df64196701858eab2"],"shoani":["Shoani","59defdc2e0d22ccaa54745558f3580d765ca977962067a88b202ebffca7f4e0d"],"xvillix14":["Xvillix14","f7981d11cdd69903f2ae9f9eeb55f8fc33c2c466b4282773bfaa81b350303f51"],"zalirayy":["zalirayy","0d6ec5e2864d6c7d183946e235946020981f70c1c8c8b7524cb9536bb38333dc"],"ferxs":["FERXS","c48cddbaa462a0666c045c9cc9920ce3b4514f911bf9ecc02d5a751dda4e78cc"],"gotty":["Gotty","1cab46704e41ae98983ba2c5be0ae5b892dcf835bc78a2f44ebf203cb806bfe2"]};
+
+const $=id=>document.getElementById(id);
+const esc=s=>{const d=document.createElement("div");d.textContent=s;return d.innerHTML};
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const GH=CFG.owner!=="TU_USUARIO";
+const API=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/`;
+const RAW=`https://raw.githubusercontent.com/${CFG.owner}/${CFG.repo}/${CFG.branch}/`;
+const token=()=>LS.get("jp_tok","");
+const hdr=()=>{const h={Accept:"application/vnd.github+json"};if(token())h.Authorization="Bearer "+token();return h};
+const enc=s=>btoa(unescape(encodeURIComponent(s)));
+const dec=b=>decodeURIComponent(escape(atob(b.replace(/\n/g,""))));
+const b2a=u=>btoa(String.fromCharCode(...u)), a2b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+
+async function getFile(path){
+  const r=await fetch(API+path+"?ref="+CFG.branch+"&t="+Date.now(),{headers:hdr()});
+  if(r.status===404)return{sha:null,text:null};
+  if(!r.ok)throw new Error("GitHub "+r.status);
+  const j=await r.json();return{sha:j.sha,text:j.content?dec(j.content):""};
+}
+async function putFile(path,b64,sha,msg){
+  const r=await fetch(API+path,{method:"PUT",headers:hdr(),body:JSON.stringify({message:msg,content:b64,branch:CFG.branch,...(sha?{sha}:{})})});
+  if(!r.ok)throw new Error("GitHub "+r.status);
+}
+
+/* Bóveda: el token queda cifrado en data/vault.json para que todos publiquen sin ver el botón.
+   Es ofuscación, no seguridad fuerte: quien lea el código podría sacarlo. */
+async function vkey(salt){
+  const m=await crypto.subtle.importKey("raw",new TextEncoder().encode("japon:"+CFG.owner+"/"+CFG.repo),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},m,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function sealToken(t){
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},await vkey(salt),new TextEncoder().encode(t)));
+  return JSON.stringify({s:b2a(salt),i:b2a(iv),c:b2a(ct)});
+}
+async function openToken(){
+  try{
+    const r=await fetch(RAW+"data/vault.json?t="+Date.now());if(!r.ok)return"";
+    const j=await r.json();
+    return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:a2b(j.i)},await vkey(a2b(j.s)),a2b(j.c)));
+  }catch(e){return""}
+}
+
+let me=LS.get("jp_me",null), posts=[], profiles={}, shown=null, view="p", open=new Set(), ver={};
+async function sha256(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("japon:"+t));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
+
+async function login(){
+  const k=$("user").value.trim().toLowerCase(), p=$("pass").value;
+  if(!SEED[k]||SEED[k][1]!==await sha256(p)){$("authMsg").textContent="Usuario o contraseña incorrectos.";return}
+  me=k;LS.set("jp_me",me);$("pass").value="";enter();
+}
+$("go").onclick=login;
+["user","pass"].forEach(i=>$(i).addEventListener("keydown",e=>{if(e.key==="Enter")login()}));
+$("logout").onclick=()=>{me=null;LS.set("jp_me",null);clearInterval(window._t);$("app").classList.add("hidden");$("auth").classList.remove("hidden")};
+
+/* ---- datos ---- */
+async function readJ(path,def){
+  if(!GH)return LS.get("f_"+path,def);
+  try{const f=await getFile(path);const d=f.text?JSON.parse(f.text):def;LS.set("f_"+path,d);return d}
+  catch(e){setStatus("No se pudo leer GitHub ("+e.message+"). Mostrando copia local.");return LS.get("f_"+path,def)}
+}
+async function editJ(path,def,fn){
+  if(!GH){const d=LS.get("f_"+path,def);fn(d);LS.set("f_"+path,d);return d}
+  if(!token()){setStatus("Todavía no se puede escribir: JuanDiPrron debe conectar GitHub una vez.");return null}
+  for(let i=0;i<3;i++){
+    try{
+      const f=await getFile(path);const d=f.text?JSON.parse(f.text):def;fn(d);
+      await putFile(path,enc(JSON.stringify(d,null,1)),f.sha,"Japón Social: "+me);
+      LS.set("f_"+path,d);setStatus();return d;
+    }catch(e){if(i===2)setStatus("No se pudo guardar en GitHub ("+e.message+").")}
+  }
+  return null;
+}
+async function refresh(){posts=await readJ("data/posts.json",[]);profiles=await readJ("data/profiles.json",{});render()}
+const act=fn=>editJ("data/posts.json",[],fn).then(d=>{if(d){posts=d;render()}});
+
+function setStatus(m){
+  const el=$("status");
+  if(!GH){el.innerHTML="Modo local: cambia <b>CFG</b> en el archivo para guardar en GitHub.";return}
+  if(m){el.textContent=m;return}
+  if(token()){el.textContent="Conectado a GitHub · "+CFG.owner+"/"+CFG.repo;return}
+  if(me===OWNER_USER){el.innerHTML='<button id="tk">Conectar GitHub</button> (solo tú ves este botón; se hace una vez)';
+    $("tk").onclick=async()=>{
+      const t=prompt("Pega tu token de GitHub (Contents: lectura y escritura):");if(!t)return;
+      LS.set("jp_tok",t.trim());
+      try{const f=await getFile("data/vault.json");await putFile("data/vault.json",enc(await sealToken(t.trim())),f.sha,"vault");setStatus()}
+      catch(e){LS.set("jp_tok","");setStatus("El token no funciona o no tiene permisos ("+e.message+").")}
+    };
+  }else el.textContent="Solo lectura por ahora: esperando que JuanDiPrron conecte GitHub.";
+}
+
+/* ---- piezas ---- */
+const nm=k=>SEED[k]?SEED[k][0]:k;
+function av(k,c){
+  const l=esc((nm(k)[0]||"?").toUpperCase());
+  const src=GH?RAW+"fdp/fdp-"+k+".jpg?v="+(ver[k]||LS.get("jp_v_"+k,0)):LS.get("jp_img_"+k,"");
+  return `<span class="av ${c||""}">${l}${src?`<img alt="" src="${src}" onerror="this.remove()">`:""}</span>`;
+}
+const ago=t=>{const s=(Date.now()-t)/1e3;return s<60?"ahora":s<3600?Math.floor(s/60)+" min":s<86400?Math.floor(s/3600)+" h":Math.floor(s/86400)+" d"};
+function postHTML(p){
+  const r=p.replies||[], o=open.has(p.id);
+  return `<article class="post">${av(p.by)}<div class="body">
+  <div class="who"><a data-u="${p.by}">${esc(nm(p.by))}</a><span>${ago(p.t)}</span></div>
+  <p>${esc(p.text)}</p>
+  <div class="acts"><button data-l="${p.id}" class="${p.likes.includes(me)?"on":""}">Me gusta ${p.likes.length}</button><button data-o="${p.id}">Responder ${r.length}</button>${p.by===me?`<button data-d="${p.id}">Borrar</button>`:""}</div>
+  ${o?`<div class="replies">${r.map(x=>`<div class="rep">${av(x.by,"s")}<div><b>${esc(nm(x.by))}</b> <span class="ctx">${ago(x.t)}</span>${x.by===me?`<button data-rd="${p.id}:${x.id}">borrar</button>`:""}<p>${esc(x.text)}</p></div></div>`).join("")}
+  <div class="rform"><textarea id="rt${p.id}" rows="1" maxlength="300" placeholder="Escribe una respuesta..."></textarea><button class="btn sm" data-rs="${p.id}">Enviar</button></div></div>`:""}
+  </div></article>`;
+}
+function wire(root){
+  const q=(s,f)=>root.querySelectorAll(s).forEach(f);
+  q("[data-u]",a=>a.onclick=()=>go("m",a.dataset.u));
+  q("[data-l]",b=>b.onclick=()=>act(a=>{const p=a.find(x=>x.id==b.dataset.l);if(!p)return;const i=p.likes.indexOf(me);i>-1?p.likes.splice(i,1):p.likes.push(me)}));
+  q("[data-d]",b=>b.onclick=()=>act(a=>{const p=a.find(x=>x.id==b.dataset.d);if(p&&p.by===me)a.splice(a.indexOf(p),1)}));
+  q("[data-o]",b=>b.onclick=()=>{const id=+b.dataset.o;open.has(id)?open.delete(id):open.add(id);render()});
+  q("[data-rs]",b=>b.onclick=()=>{const id=+b.dataset.rs,t=$("rt"+id).value.trim();if(!t)return;act(a=>{const p=a.find(x=>x.id===id);if(p){(p.replies=p.replies||[]).push({id:Date.now(),by:me,text:t,t:Date.now()})}})});
+  q("[data-rd]",b=>b.onclick=()=>{const[pi,ri]=b.dataset.rd.split(":");act(a=>{const p=a.find(x=>x.id==pi);if(p)p.replies=(p.replies||[]).filter(x=>!(x.id==ri&&x.by===me))})});
+}
+$("send").onclick=()=>{const t=$("txt").value.trim();if(!t)return;$("txt").value="";act(a=>a.unshift({id:Date.now(),by:me,text:t,t:Date.now(),likes:[],replies:[]}))};
+
+/* ---- perfil ---- */
+$("saveBio").onclick=async()=>{
+  const b=$("bioIn").value.trim();
+  const d=await editJ("data/profiles.json",{},o=>{o[me]=Object.assign(o[me]||{},{bio:b})});
+  if(d){profiles=d;$("pMsg").textContent="Descripción guardada.";render()}
+};
+$("chg").onclick=()=>$("file").click();
+$("file").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;const m=$("pMsg");m.textContent="";
+  if(!/^image\//.test(f.type)){m.textContent="Elige un archivo de imagen.";return}
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=async()=>{
+    const c=document.createElement("canvas");c.width=c.height=256;const s=Math.min(im.width,im.height);
+    c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,256,256);
+    const url=c.toDataURL("image/jpeg",.85);
+    if(!GH){LS.set("jp_img_"+me,url);m.textContent="Foto guardada en este navegador.";render();return}
+    if(!token()){m.textContent="Todavía no se puede subir: JuanDiPrron debe conectar GitHub.";return}
+    try{
+      const path="fdp/fdp-"+me+".jpg",f0=await getFile(path);
+      await putFile(path,url.split(",")[1],f0.sha,"fdp-"+me);
+      ver[me]=Date.now();LS.set("jp_v_"+me,ver[me]);m.textContent="Foto guardada en "+path;render();
+    }catch(err){m.textContent="No se pudo subir ("+err.message+").";}
+  };im.src=r.result};
+  r.readAsDataURL(f);e.target.value="";
+};
+
+/* ---- vistas ---- */
+function go(w,u){view=w;shown=w==="m"?(u||me):null;
+  $("vP").classList.toggle("hidden",w!=="p");$("vU").classList.toggle("hidden",w!=="u");$("vM").classList.toggle("hidden",w!=="m");
+  $("nP").classList.toggle("on",w==="p");$("nU").classList.toggle("on",w==="u");$("nM").classList.toggle("on",w==="m"&&shown===me);
+  render();scrollTo(0,0)}
+$("nP").onclick=()=>go("p");$("nU").onclick=()=>go("u");$("nM").onclick=()=>go("m");
+
+function render(){
+  if(!me)return;
+  $("cAv").innerHTML=av(me);
+  if(view==="p"){$("feed").innerHTML=posts.length?posts.map(postHTML).join(""):'<div class="empty">Todavía no hay publicaciones.</div>';wire($("feed"))}
+  if(view==="u"){
+    $("ulist").innerHTML=Object.keys(SEED).sort().map(k=>{const n=posts.filter(p=>p.by===k).length;
+      return `<div class="urow" data-u="${k}">${av(k)}<div><b>${esc(nm(k))}</b><small>${esc((profiles[k]&&profiles[k].bio)||"Sin descripción")}</small></div><span class="ctx">${n} posts</span></div>`}).join("");
+    wire($("ulist"));
+  }
+  if(view==="m"){
+    const u=shown||me,own=u===me;
+    $("bigAv").innerHTML=av(u,"xl");$("pName").textContent=nm(u);
+    const bio=(profiles[u]&&profiles[u].bio)||"";
+    $("bioView").textContent=own?"":(bio||"Sin descripción");
+    $("editBox").classList.toggle("hidden",!own);
+    if(own&&document.activeElement!==$("bioIn"))$("bioIn").value=bio;
+    const mine=posts.filter(p=>p.by===u);
+    $("myPosts").innerHTML=mine.length?mine.map(postHTML).join(""):'<div class="empty">Sin publicaciones.</div>';
+    const reps=[];posts.forEach(p=>(p.replies||[]).forEach(r=>{if(r.by===u)reps.push({p,r})}));
+    reps.sort((a,b)=>b.r.t-a.r.t);
+    $("myReps").innerHTML=reps.length?reps.map(({p,r})=>`<div class="post"><div class="body"><div class="ctx">En respuesta a ${esc(nm(p.by))}: “${esc(p.text.slice(0,70))}${p.text.length>70?"…":""}”</div><p>${esc(r.text)}</p><span class="ctx">${ago(r.t)}</span></div></div>`).join(""):'<div class="empty">Sin respuestas.</div>';
+    wire($("myPosts"));
+  }
+}
+async function enter(){
+  $("auth").classList.add("hidden");$("app").classList.remove("hidden");
+  go("p");
+  if(GH&&!token()){const t=await openToken();if(t)LS.set("jp_tok",t)}
+  setStatus();await refresh();
+  clearInterval(window._t);window._t=setInterval(()=>{if(!document.activeElement||!/TEXTAREA|INPUT/.test(document.activeElement.tagName))refresh()},30000);
+}
+if(me&&SEED[me])enter();
+</script>
+</body>
+</html>
